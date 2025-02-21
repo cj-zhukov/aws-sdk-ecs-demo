@@ -1,5 +1,5 @@
 use aws_config::{BehaviorVersion, Region};
-use aws_sdk_ecs::{operation::run_task::RunTaskOutput, types::{AssignPublicIp, AwsVpcConfiguration, ContainerOverride, LaunchType, NetworkConfiguration, TaskOverride}, Client};
+use aws_sdk_ecs::{operation::run_task::RunTaskOutput, types::{AssignPublicIp, AwsVpcConfiguration, ContainerOverride, KeyValuePair, LaunchType, NetworkConfiguration, TaskOverride}, Client};
 use color_eyre::Result;
 
 pub mod constants;
@@ -20,12 +20,14 @@ pub async fn run_ecs_task(
     container: &str,
     subnets: Option<Vec<String>>,
     security_groups: Option<Vec<String>>,
+    foo: &str,
 ) -> Result<RunTaskOutput> {
+    let foo = KeyValuePair::builder().name("FOO").value(foo).build();
     let overrides = TaskOverride::builder()
         .container_overrides(
             ContainerOverride::builder()
                 .name(container)
-                // .environment("BUCKET", &bucket) // add env varibles here
+                .environment(foo)
                 .build(),
         )
         .build();
